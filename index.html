@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Short Polling</title>
+</head>
+<body>
+  <h2 id="text">Checking version...</h2>
+
+  <script>
+    let currentVersion = "";
+
+    async function checkVersion() {
+      const res = await fetch("http://localhost:3000/version");
+      const data = await res.json();
+
+      if (data.version !== currentVersion) {
+        currentVersion = data.version;
+        document.getElementById("text").innerText =
+          "New Version: " + currentVersion;
+      }
+
+      console.log("Polling...");
+    }
+
+    // Call every 5 seconds
+    setInterval(checkVersion, 5000);
+
+    checkVersion();
+  </script>
+</body>
+</html>
