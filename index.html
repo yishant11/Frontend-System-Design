@@ -4,7 +4,7 @@
   <title>Short Polling</title>
 </head>
 <body>
-  <h2 id="text">Checking version...</h2>
+  <!-- <h2 id="text">Checking version...</h2>
 
   <script>
     let currentVersion = "";
@@ -26,6 +26,22 @@
     setInterval(checkVersion, 5000);
 
     checkVersion();
+  </script> -->
+
+  <h2 id="text">Waiting...</h2>
+  
+  <script>
+    async function listenForUpdates() {
+      const res = await fetch("http://localhost:3000/updates");
+      const data = await res.json();
+
+      document.getElementById("text").innerText = data.message;
+
+      // Start next long poll
+      listenForUpdates();
+    }
+
+    listenForUpdates();
   </script>
 </body>
 </html>
