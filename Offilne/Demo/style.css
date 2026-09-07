@@ -51,9 +51,14 @@ h1 {
     color: #475569;
 }
 
+.button-group {
+    display: flex;
+    gap: 12px;
+    padding: 0 20px;
+}
+
 .card button {
-    margin: 0 20px;
-    padding: 10px 24px;
+    padding: 10px 20px;
     background: #e11d48;
     color: #ffffff;
     border: none;
@@ -72,3 +77,77 @@ h1 {
 .card button:active {
     transform: scale(0.98);
 }
+
+#notify-btn {
+    background: #8936FF;
+}
+
+#notify-btn:hover {
+    background: #701bd6;
+}
+
+/* In-App Toast Notification on UI */
+.toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toast {
+    background: #ffffff;
+    color: #1e293b;
+    border-left: 5px solid #8936FF;
+    border-radius: 12px;
+    padding: 14px 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 300px;
+    max-width: 400px;
+    animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast img {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.toast-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.toast-content h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.toast-content p {
+    font-size: 0.85rem;
+    color: #475569;
+    margin: 0;
+    padding: 0;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-25px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
