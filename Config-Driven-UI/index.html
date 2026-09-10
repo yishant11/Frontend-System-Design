@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Config-Driven UI — Interactive Playground</title>
+  <meta name="description" content="Learn Config-Driven UI (CDUI / Server-Driven UI) with a live, interactive playground. Edit JSON schema, see the UI update in real-time. Perfect for Frontend System Design interviews." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div id="app-shell">
+
+  <!-- ════════════ HEADER BAR ════════════ -->
+  <header class="header-bar">
+    <div class="logo">
+      <div class="logo-icon">⚙</div>
+      <span class="logo-text">Config-Driven UI</span>
+      <span class="logo-badge">Live Playground</span>
+    </div>
+
+    <nav class="preset-tabs" id="preset-tabs">
+      <button class="preset-tab active" data-preset="food_feed">
+        <span class="tab-emoji">🍕</span>Food Feed
+      </button>
+      <button class="preset-tab" data-preset="kyc_form">
+        <span class="tab-emoji">📋</span>KYC Form
+      </button>
+      <button class="preset-tab" data-preset="ecommerce">
+        <span class="tab-emoji">🛒</span>E-Commerce
+      </button>
+      <button class="preset-tab" data-preset="dashboard">
+        <span class="tab-emoji">📊</span>Dashboard
+      </button>
+    </nav>
+  </header>
+
+  <!-- ════════════ WORKSPACE ════════════ -->
+  <main class="workspace">
+
+    <!-- ──── Editor Panel (Left) ──── -->
+    <section class="editor-panel">
+      <div class="editor-toolbar">
+        <div class="toolbar-title">
+          <span class="dot"></span>
+          schema.json
+        </div>
+        <div class="toolbar-actions">
+          <button class="toolbar-btn" id="btn-format" title="Format JSON">FORMAT</button>
+          <button class="toolbar-btn" id="btn-copy" title="Copy JSON">COPY</button>
+          <button class="toolbar-btn danger" id="btn-clear" title="Clear editor">CLEAR</button>
+        </div>
+      </div>
+
+      <div class="editor-wrap">
+        <textarea id="json-editor" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+      </div>
+
+      <div class="error-banner" id="error-banner">
+        <span class="error-icon">⚠️</span>
+        <span id="error-message">JSON Parse Error</span>
+      </div>
+    </section>
+
+    <!-- ──── Preview Panel (Right) ──── -->
+    <section class="preview-panel">
+      <div class="preview-toolbar">
+        <span class="toolbar-title">🖥 Live Preview</span>
+        <div class="viewport-toggle">
+          <button class="viewport-btn active" data-viewport="desktop" id="vp-desktop">Desktop</button>
+          <button class="viewport-btn" data-viewport="mobile" id="vp-mobile">Mobile</button>
+        </div>
+      </div>
+
+      <div class="preview-viewport" id="preview-viewport">
+        <div class="preview-frame" id="preview-frame">
+          <!-- Rendered UI appears here -->
+        </div>
+      </div>
+
+      <!-- Event Log -->
+      <div class="event-log-panel" id="event-log-panel">
+        <div class="event-log-header" id="event-log-toggle">
+          <span class="log-title">📋 Event Log</span>
+          <span class="log-count" id="log-count">0</span>
+        </div>
+        <div class="event-log-list" id="event-log-list"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Scripts -->
+<script src="presets.js"></script>
+<script src="cdui-engine.js"></script>
+<script>
+  // ══════════════════════════════════════════
+  // APP CONTROLLER — Wires everything together
+  // ══════════════════════════════════════════
+
+  (function () {
+    'use strict';
+
+    // ── DOM References ──
+    const editor       = document.getElementById('json-editor');
+    const previewFrame = document.getElementById('preview-frame');
+    const previewVP    = document.getElementById('preview-viewport');
+    const errorBanner  = document.getElementById('error-banner');
+    const errorMessage = document.getElementById('error-message');
+    const presetTabs   = document.getElementById('preset-tabs');
+    const logList      = document.getElementById('event-log-list');
+    const logCount     = document.getElementById('log-count');
+    const btnFormat    = document.getElementById('btn-format');
+    const btnCopy      = document.getElementById('btn-copy');
+    const btnClear     = document.getElementById('btn-clear');
+    const vpDesktop    = document.getElementById('vp-desktop');
+    const vpMobile     = document.getElementById('vp-mobile');
+
+    // ── Init Event Logger ──
+    EventLogger.init(logList, logCount);
+
+    // ── Current state ──
+    let currentPresetKey = 'food_feed';
+    let debounceTimer = null;
+
+    // ══════════════════════════════════════
+    // LOAD PRESET
+    // ══════════════════════════════════════
+    function loadPreset(key) {
+      const preset = PRESETS[key];
+      if (!preset) return;
+
+      currentPresetKey = key;
+
+      // Reset state for new preset
+      StateStore.reset();
+      EventLogger.clear();
+
+      // Update editor content
+      const jsonStr = JSON.stringify(preset.schema, null, 2);
+      editor.value = jsonStr;
+
+      // Update active tab styling
+      document.querySelectorAll('.preset-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.preset === key);
+      });
+
+      // Render
+      hideError();
+      renderFromEditor();
+
+      EventLogger.log('render', `Loaded preset: ${preset.meta.name}`);
+    }
+
+    // ══════════════════════════════════════
+    // RENDER FROM EDITOR TEXT
+    // ══════════════════════════════════════
+    function renderFromEditor() {
+      const text = editor.value.trim();
+      if (!text) {
+        previewFrame.innerHTML = '<div class="cdui-error-fallback" style="text-align:center;padding:40px;">Type or paste a JSON schema to see it rendered here ✨</div>';
+        hideError();
+        return;
+      }
+
+      try {
+        const schema = JSON.parse(text);
+        hideError();
+        renderSchema(schema, previewFrame);
+      } catch (e) {
+        showError(e.message);
+      }
+    }
+
+    // ══════════════════════════════════════
+    // ERROR DISPLAY
+    // ══════════════════════════════════════
+    function showError(msg) {
+      errorBanner.classList.add('visible');
+      errorMessage.textContent = msg;
+    }
+
+    function hideError() {
+      errorBanner.classList.remove('visible');
+    }
+
+    // ══════════════════════════════════════
+    // EVENT LISTENERS
+    // ══════════════════════════════════════
+
+    // Live editing with debounce
+    editor.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(renderFromEditor, 300);
+    });
+
+    // Tab key support in editor
+    editor.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
+        editor.selectionStart = editor.selectionEnd = start + 2;
+      }
+    });
+
+    // Preset tabs
+    presetTabs.addEventListener('click', (e) => {
+      const tab = e.target.closest('.preset-tab');
+      if (tab && tab.dataset.preset) {
+        loadPreset(tab.dataset.preset);
+      }
+    });
+
+    // Format button
+    btnFormat.addEventListener('click', () => {
+      try {
+        const parsed = JSON.parse(editor.value);
+        editor.value = JSON.stringify(parsed, null, 2);
+        hideError();
+        EventLogger.log('action', 'JSON formatted');
+      } catch (e) {
+        showError(e.message);
+      }
+    });
+
+    // Copy button
+    btnCopy.addEventListener('click', () => {
+      navigator.clipboard.writeText(editor.value).then(() => {
+        ActionDispatcher._showToast('📋 JSON copied to clipboard!');
+        EventLogger.log('action', 'JSON copied to clipboard');
+      });
+    });
+
+    // Clear button
+    btnClear.addEventListener('click', () => {
+      editor.value = '';
+      previewFrame.innerHTML = '';
+      hideError();
+      EventLogger.log('action', 'Editor cleared');
+    });
+
+    // Viewport toggle
+    vpDesktop.addEventListener('click', () => {
+      vpDesktop.classList.add('active');
+      vpMobile.classList.remove('active');
+      previewFrame.classList.remove('mobile');
+      previewVP.classList.remove('mobile-view');
+    });
+
+    vpMobile.addEventListener('click', () => {
+      vpMobile.classList.add('active');
+      vpDesktop.classList.remove('active');
+      previewFrame.classList.add('mobile');
+      previewVP.classList.add('mobile-view');
+    });
+
+    // State change → re-render (for conditional visibility)
+    StateStore.onChange(() => {
+      renderFromEditor();
+    });
+
+    // ══════════════════════════════════════
+    // BOOT — Load default preset
+    // ══════════════════════════════════════
+    loadPreset('food_feed');
+
+  })();
+</script>
+
+</body>
+</html>
