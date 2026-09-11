@@ -1,0 +1,54 @@
+{
+  "en": {
+    "eyebrow": "About Us",
+    "title": "Building modern digital experiences",
+    "lead": "We design thoughtful, user-first products that blend performance, clarity, and accessibility across every touchpoint.",
+    "missionTitle": "Our Mission",
+    "missionText": "To create innovative interfaces that help people move faster, understand more, and trust the systems they use every day.",
+    "visionTitle": "Our Vision",
+    "visionText": "To shape digital experiences that are inclusive, scalable, and prepared for the next generation of technology.",
+    "featuresTitle": "Why teams choose us",
+    "feature1": "Clear, maintainable design systems",
+    "feature2": "Cross-platform experiences with strong accessibility",
+    "feature3": "Reliable engineering backed by thoughtful collaboration"
+  },
+  "hi": {
+    "eyebrow": "हमारे बारे में",
+    "title": "आधुनिक डिजिटल अनुभव बनाना",
+    "lead": "हम ऐसे विचारशील, उपयोगकर्ता-केंद्रित उत्पाद बनाते हैं जो प्रदर्शन, स्पष्टता और उपयोगिता को हर स्पर्श बिंदु पर मिलाते हैं।",
+    "missionTitle": "हमारा मिशन",
+    "missionText": "ऐसे नवाचारी इंटरफ़ेस बनाना जो लोगों को तेज़ी से काम करने, अधिक समझने और रोज़मर्रा की प्रणालियों पर भरोसा करने में मदद करें।",
+    "visionTitle": "हमारा विज़न",
+    "visionText": "ऐसे डिजिटल अनुभव बनाना जो समावेशी, स्केलेबल और अगली पीढ़ी की तकनीक के लिए तैयार हों।",
+    "featuresTitle": "टीमें हमारी ओर क्यों आती हैं",
+    "feature1": "स्पष्ट और रखरखाव योग्य डिज़ाइन सिस्टम",
+    "feature2": "मजबूत एक्सेसिबिलिटी के साथ क्रॉस-प्लॅटफ़ॉर्म अनुभव",
+    "feature3": "सोच-समझकर सहयोग के साथ भरोसेमंद इंजीनियरिंग"
+  },
+  "es": {
+    "eyebrow": "Sobre nosotros",
+    "title": "Creando experiencias digitales modernas",
+    "lead": "Diseñamos productos pensados para el usuario, que combinan rendimiento, claridad y accesibilidad en cada punto de contacto.",
+    "missionTitle": "Nuestra misión",
+    "missionText": "Crear interfaces innovadoras que ayuden a las personas a moverse más rápido, comprender mejor y confiar en los sistemas que usan cada día.",
+    "visionTitle": "Nuestra visión",
+    "visionText": "Dar forma a experiencias digitales inclusivas, escalables y preparadas para la próxima generación de tecnología.",
+    "featuresTitle": "Por qué los equipos nos eligen",
+    "feature1": "Sistemas de diseño claros y fáciles de mantener",
+    "feature2": "Experiencias multiplataforma con sólida accesibilidad",
+    "feature3": "Ingeniería confiable respaldada por una colaboración cuidadosa"
+  },
+  "ru": {
+    "eyebrow": "О нас",
+    "title": "Создаём современные цифровые впечатления",
+    "lead": "Мы создаём продуманные продукты, ориентированные на пользователя, которые сочетают производительность, понятность и доступность на всех уровнях взаимодействия.",
+    "missionTitle": "Наша миссия",
+    "missionText": "Создавать инновационные интерфейсы, которые помогают людям действовать быстрее, лучше понимать происходящее и доверять системам, которыми они пользуются каждый день.",
+    "visionTitle": "Наше видение",
+    "visionText": "Формировать цифровые решения, которые являются инклюзивными, масштабируемыми и готовыми к следующему поколению технологий.",
+    "featuresTitle": "Почему команды выбирают нас",
+    "feature1": "Чёткие и поддерживаемые дизайн-системы",
+    "feature2": "Кроссплатформенный опыт с высокой доступностью",
+    "feature3": "Надёжная инженерия и продуманное сотрудничество"
+  }
+}
